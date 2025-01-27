@@ -155,6 +155,8 @@ class MorseCodeApp:
             elif symbol == '/':
                 time.sleep(600 / 1000)  # Space between words
 
+        self.sound_only_button.config(state="normal")
+
     def toggle_chart(self):
         if self.show_chart:
             self.chart_frame.destroy()
