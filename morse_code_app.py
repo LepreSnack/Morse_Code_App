@@ -3,6 +3,7 @@ from tkinter import ttk
 import random
 import winsound
 import time
+import threading
 
 # Morse code dictionary
 MORSE_CODE_DICT = {
@@ -134,9 +135,13 @@ class MorseCodeApp:
         self.challenge_label.config(text="Sound Only Challenge!")
         self.input_entry.delete(0, tk.END)
         self.result_label.config(text="")
+        
+        self.sound_only_button.config(state="disabled")
 
-        # Play sound for the morse code
-        self.play_morse_code_sound(morse_code)
+        # Play sound for the morse code in a background thread
+        thread = threading.Thread(target=self.play_morse_code_sound, args=(morse_code,))
+        thread.daemon = True  # Ensure the thread exits when the app closes
+        thread.start()
 
     def play_morse_code_sound(self, morse_code):
         unit_time = 200  # Time duration of each dot/dash in milliseconds
