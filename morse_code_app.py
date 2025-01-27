@@ -5,6 +5,11 @@ import winsound
 import time
 import threading
 
+# Constants
+CHALLENGE_ENCODE = 1
+CHALLENGE_DECODE = 2
+CHALLENGE_AUDIO = 3
+
 # Morse code dictionary
 MORSE_CODE_DICT = {
     'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
@@ -38,6 +43,7 @@ class MorseCodeApp:
         self.root.title("Morse Code Practice")
         self.root.geometry("600x600")  # Adjusted window size
         self.root.resizable(True, True)  # Allow window to be resizable
+        self.current_challenge = 0
 
         # Main Frame
         main_frame = ttk.Frame(root, padding="20")
@@ -118,32 +124,40 @@ class MorseCodeApp:
         self.show_chart = False
         self.chart_frame = None
 
-    def generate_encode_challenge(self):
+    def generate_morse_challenge(self, type):
         self.current_phrase = random.choice(RANDOM_PHRASES)
-        self.challenge_label.config(text=f"Encode: {self.current_phrase}")
         self.input_entry.delete(0, tk.END)
         self.result_label.config(text="")
+
+        match type:
+            case 1: # CHALLENGE_ENCODE
+                self.challenge_label.config(text=f"Encode: {self.current_phrase}")
+            case 2: # CHALLENGE_DECODE
+                morse_code = text_to_morse(self.current_phrase)
+                self.challenge_label.config(text=f"Decode: {morse_code}")
+            case 3: # CHALLENGE_AUDIO
+                morse_code = text_to_morse(self.current_phrase)
+                self.challenge_label.config(text="Audio")
+                self.sound_only_button.config(state="disabled")
+
+                # Play sound for the morse code in a background thread
+                thread = threading.Thread(target=self.play_morse_code_sound, args=(morse_code,))
+                thread.daemon = True  # Ensure the thread exits when the app closes
+                thread.start()
+
+
+
+    def generate_encode_challenge(self):
+        self.current_challenge = CHALLENGE_ENCODE
+        self.generate_morse_challenge(self.current_challenge)
 
     def generate_decode_challenge(self):
-        self.current_phrase = random.choice(RANDOM_PHRASES)
-        morse_code = text_to_morse(self.current_phrase)
-        self.challenge_label.config(text=f"Decode: {morse_code}")
-        self.input_entry.delete(0, tk.END)
-        self.result_label.config(text="")
+        self.current_challenge = CHALLENGE_DECODE
+        self.generate_morse_challenge(self.current_challenge)
 
     def sound_only_challenge(self):
-        self.current_phrase = random.choice(RANDOM_PHRASES)
-        morse_code = text_to_morse(self.current_phrase)
-        self.challenge_label.config(text="Sound Only Challenge!")
-        self.input_entry.delete(0, tk.END)
-        self.result_label.config(text="")
-        
-        self.sound_only_button.config(state="disabled")
-
-        # Play sound for the morse code in a background thread
-        thread = threading.Thread(target=self.play_morse_code_sound, args=(morse_code,))
-        thread.daemon = True  # Ensure the thread exits when the app closes
-        thread.start()
+        self.current_challenge = CHALLENGE_AUDIO
+        self.generate_morse_challenge(self.current_challenge)
 
     def play_morse_code_sound(self, morse_code):
         unit_time = 200  # Time duration of each dot/dash in milliseconds
@@ -186,12 +200,13 @@ class MorseCodeApp:
         challenge_text = self.challenge_label.cget("text")
         answer_status = ""
 
-        if "Decode:" in challenge_text:
-            correct_answer = self.current_phrase
-        elif "Encode:" in challenge_text:
-            correct_answer = text_to_morse(self.current_phrase)
-        elif "Sound Only" in challenge_text:
-            correct_answer = self.current_phrase
+        match self.current_challenge:
+            case 1: # CHALLENGE_ENCODE
+                correct_answer = text_to_morse(self.current_phrase)
+            case 2: # CHALLENGE_DECODE
+                correct_answer = self.current_phrase
+            case 3: # CHALLENGE_AUDIO
+                correct_answer = self.current_phrase
 
         if user_input.upper() == correct_answer:
             self.result_label.config(text="Correct!", foreground="green")
