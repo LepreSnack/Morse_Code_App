@@ -13,7 +13,7 @@ MORSE_CODE_DICT = {
     'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
     'Y': '-.--', 'Z': '--..', '1': '.----', '2': '..---', '3': '...--',
     '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
-    '9': '----.', '0': '-----', ' ': '/'
+    '9': '----.', '0': '-----', "'": '.----.', ' ': '/'
 }
 
 RANDOM_PHRASES = [
@@ -27,7 +27,9 @@ RANDOM_PHRASES = [
     "STAY CURIOUS", "BE BOLD", "HARD WORK PAYS", "SUCCESS AWAITS", "EXCEL IN EVERYTHING", 
     "NEVER LOOK BACK", "LEAD THE WAY", "THINK BIG", "MAKE A DIFFERENCE", "CHASE YOUR DREAMS",
     "DON'T GIVE UP", "BELIEVE IN YOURSELF", "TIME IS PRECIOUS", "THE SKY'S THE LIMIT",
-    "MAKE IT COUNT", "FOLLOW YOUR PASSION", "DO IT TODAY", "YOU'RE AMAZING", "DON'T LOOK BACK"
+    "MAKE IT COUNT", "FOLLOW YOUR PASSION", "DO IT TODAY", "YOU'RE AMAZING", "DON'T LOOK BACK", 
+    "ALEX50 IS A BITCH", "MILES IS A BLOBFISH", "PLEASE DO NOT FEED THE WHORES DRUGS", "GAMBLING IS FUN",
+
 ]
 
 class MorseCodeApp:
