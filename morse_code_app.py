@@ -1,9 +1,19 @@
 import tkinter as tk
 from tkinter import ttk
 import random
-import winsound
 import time
 import threading
+
+try:
+    import winsound
+except ImportError:
+    import os
+    def playsound(frequency,duration): # linux
+        #apt-get install beep
+        os.system('beep -f %s -l %s' % (frequency,duration))
+else:
+    def playsound(frequency,duration): ## windows
+        winsound.Beep(frequency,duration)
 
 # Constants
 CHALLENGE_ENCODE = 1
@@ -62,12 +72,12 @@ class MorseCodeApp:
         main_frame.grid_columnconfigure(2, weight=1)
 
         # Title Label
-        title_label = ttk.Label(main_frame, text="Morse Code Practice", font=("Arial", 24, "bold"))
+        title_label = ttk.Label(main_frame, text="Morse Code Practice", font=("Arial", 20, "bold"))
         title_label.grid(row=0, column=0, columnspan=3, pady=10, sticky="nsew")
 
         # Challenge Label
-        self.challenge_label = ttk.Label(main_frame, text="Press a button to generate a challenge!", font=("Arial", 16), wraplength=500)
-        self.challenge_label.grid(row=1, column=0, columnspan=3, pady=15, sticky="nsew")
+        self.challenge_label = ttk.Label(main_frame, text="Press a button to generate a challenge!", font=("Arial", 16))
+        self.challenge_label.grid(row=1, column=0, columnspan=3, pady=10, sticky="nsew")
 
         # Input Section
         input_frame = ttk.Frame(main_frame)
@@ -163,9 +173,9 @@ class MorseCodeApp:
         unit_time = 200  # Time duration of each dot/dash in milliseconds
         for symbol in morse_code:
             if symbol == '.':
-                winsound.Beep(1000, 200)  # Dot sound (1000 Hz, 200 ms)
+                playsound(1000, 200)  # Dot sound (1000 Hz, 200 ms)
             elif symbol == '-':
-                winsound.Beep(1000, 600)  # Dash sound (1000 Hz, 600 ms)
+                playsound(1000, 600)  # Dash sound (1000 Hz, 600 ms)
             elif symbol == ' ':
                 time.sleep(200 / 1000)  # Space between parts of the same letter
             elif symbol == '/':
@@ -216,12 +226,14 @@ class MorseCodeApp:
             answer_status = "Incorrect"
 
         # Update History with result
-        if "Decode:" in challenge_text:
-            self.decode_history_box.insert(tk.END, f"Morse: {text_to_morse(self.current_phrase)} | Your Input: {user_input} | {answer_status}")
-        elif "Encode:" in challenge_text:
-            self.encode_history_box.insert(tk.END, f"Phrase: {self.current_phrase} | Your Input: {user_input} | {answer_status}")
-        elif "Sound Only" in challenge_text:
-            self.sound_only_history_box.insert(tk.END, f"Sound: {text_to_morse(self.current_phrase)} | Your Input: {user_input} | {answer_status}")
+        match self.current_challenge:
+            case 1: # CHALLENGE_ENCODE
+                self.encode_history_box.insert(tk.END, f"Phrase: {self.current_phrase} | Your Input: {user_input} | {answer_status}")
+            case 2: # CHALLENGE_DECODE
+                self.decode_history_box.insert(tk.END, f"Morse: {text_to_morse(self.current_phrase)} | Your Input: {user_input} | {answer_status}")
+            case 3: # CHALLENGE_AUDIO
+                self.sound_only_history_box.insert(tk.END, f"Sound: {text_to_morse(self.current_phrase)} | Your Input: {user_input} | {answer_status}")
+
 
 # Utility Function
 def text_to_morse(text):
