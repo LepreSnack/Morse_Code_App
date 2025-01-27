@@ -189,9 +189,9 @@ class MorseCodeApp:
         elif "Encode:" in challenge_text:
             correct_answer = text_to_morse(self.current_phrase)
         elif "Sound Only" in challenge_text:
-            correct_answer = text_to_morse(self.current_phrase)
+            correct_answer = self.current_phrase
 
-        if user_input == correct_answer:
+        if user_input.upper() == correct_answer:
             self.result_label.config(text="Correct!", foreground="green")
             answer_status = "Correct"
         else:
